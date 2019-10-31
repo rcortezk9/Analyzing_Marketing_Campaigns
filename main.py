@@ -4,10 +4,13 @@ import pandas as pd
 marketing = pd.read_csv('marketing.csv')
 
 # Examining the data
-print(marketing.head())
+# print(marketing.head())
 
 # Print the statistics of all columns
-print(marketing.describe())
+# print(marketing.describe())
 
 # Check column data types and non-missing values
-print(marketing.info())
+# print(marketing.info())
+
+# Check the data type of is_retained
+print(marketing['is_retained'].dtype)
