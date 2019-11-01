@@ -37,6 +37,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="ignore_missing_gitignore" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../Bitcoin_Crypto_Market" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -112,7 +113,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1572531288505</updated>
-      <workItem from="1572531297736" duration="4898000" />
+      <workItem from="1572531297736" duration="5541000" />
+      <workItem from="1572569862992" duration="6075000" />
     </task>
     <task id="LOCAL-00001" summary="intial commit">
       <created>1572532985443</created>
@@ -128,7 +130,21 @@
       <option name="project" value="LOCAL" />
       <updated>1572533243759</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Cleaning up date&#10;Visualization">
+      <created>1572564173698</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1572564173698</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Setting up our data to visualize daily conversion">
+      <created>1572564308594</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1572564308594</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -139,7 +155,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>
@@ -147,6 +165,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="intial commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="intial commit" />
+    <MESSAGE value="Cleaning up date&#10;Visualization" />
+    <MESSAGE value="Setting up our data to visualize daily conversion" />
+    <option name="LAST_COMMIT_MESSAGE" value="Setting up our data to visualize daily conversion" />
   </component>
 </project>

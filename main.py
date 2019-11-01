@@ -1,4 +1,4 @@
-# %%
+#%%
 import pandas as pd
 import numpy as np
 
@@ -11,14 +11,8 @@ marketing = pd.read_csv('marketing.csv',
 
 # Examining the data
 print(marketing.head())
-# Print the statistics of all columns
-print(marketing.describe())
-# Check column data types and non-missing values
-print(marketing.info())
-# Check the data type of is_retained
-print(marketing['is_retained'].dtype)
 
-# %%
+#%%
 # Convert is_retained to a boolean
 marketing['is_retained'] = marketing['is_retained'].astype('bool')
 
@@ -44,7 +38,7 @@ daily_users = marketing.groupby(['date_served'])['user_id'].nunique()
 # Print head of daily_users
 print(daily_users.head())
 
-# %%
+#%%
 import matplotlib.pyplot as plt
 
 # Plot daily_subscribers
@@ -60,9 +54,8 @@ plt.xticks(rotation=45)
 # Display the plot
 plt.show()
 
-# %%
+#%%
 
-# Conversion Rate
 # Calculate the number of people we marketed to
 total = marketing['user_id'].nunique()
 
@@ -71,10 +64,21 @@ subscribers = marketing[marketing['converted']==True]['user_id'].nunique()
 
 # Calculate the conversion rate
 conversion_rate = subscribers/total
-
 print(round(conversion_rate*100, 2), "%")
 
-# %%
+#%%
+# Calculate the number of subscribers
+total_subscribers = marketing[marketing['converted'] == True]['user_id'].nunique()
+
+# Calculate the number of people who remained subscribed
+retained = marketing[marketing['is_retained'] == True]['user_id'].nunique()
+
+# Calculate the retention rate
+retention_rate = retained/total_subscribers
+print(round(retention_rate*100, 2), "%")
+
+#%%
+# Customer segmentation
 
 # Isolate english speakers
 english_speakers = marketing[marketing['language_displayed'] == 'English']
@@ -86,11 +90,10 @@ total = english_speakers['user_id'].nunique()
 subscribers = english_speakers[english_speakers['converted'] == True]['user_id'].nunique()
 
 # Calculate conversion rate
-conversion_rate = subscribers/total
-print('English speaker conversion rate:', round(conversion_rate*100,2), '%')
+english_conversion_rate = subscribers/total
+print('English speaker conversion rate:', round(english_conversion_rate*100,2), '%')
 
-# %%
-
+#%%
 # Group by language_displayed and count unique users
 total = marketing.groupby(['language_displayed'])\
                                   ['user_id'].nunique()
@@ -104,8 +107,7 @@ subscribers = marketing[marketing['converted'] == True]\
 language_conversion_rate = subscribers/total
 print(language_conversion_rate)
 
-# %%
-
+#%%
 # Group by date_served and count unique users
 total = marketing.groupby(['date_served'])['user_id'].nunique()
 
@@ -118,9 +120,7 @@ subscribers = marketing[marketing['converted'] == True]\
 daily_conversion_rate = subscribers/total
 print(daily_conversion_rate)
 
-# Plotting campaign results(I)
-# %%
-
+#%%
 # Create a bar chart using language_conversion_rate DataFrame
 language_conversion_rate.plot(kind='bar')
 
@@ -132,8 +132,7 @@ plt.ylabel('Conversion rate (%)', size = 14)
 # Display the plot
 plt.show()
 
-# %%
-
+#%%
 # Group by date_served and count unique users
 total = marketing.groupby(['date_served'])['user_id']\
                      .nunique()
@@ -144,9 +143,7 @@ subscribers = marketing[marketing['converted'] == True]\
                          ['user_id'].nunique()
 
 # Calculate the conversion rate for all languages
-daily_conversion_rate = subscribers/total
-
-# %%
+all_daily_conversion_rate = subscribers/total
 
 # Reset index to turn the results into a DataFrame
 daily_conversion_rate = pd.DataFrame(daily_conversion_rate.reset_index(drop=False))
@@ -155,3 +152,124 @@ daily_conversion_rate = pd.DataFrame(daily_conversion_rate.reset_index(drop=Fals
 daily_conversion_rate.columns = ['date_served',
                               'conversion_rate']
 
+daily_conversion_rate.plot('date_served','conversion_rate')
+
+plt.title('Daily conversion rate\n', size = 16)
+plt.ylabel('Conversion rate (%)', size = 14)
+plt.xlabel('Date', size = 14)
+
+# Set the y-axis to begin at 0
+plt.ylim(0)
+
+# Display the plot
+plt.show()
+
+#%%
+# Marketing channels across age groups
+channel_age = marketing.groupby(['marketing_channel', 'age_group'])['user_id'].count()
+
+# Unstack channel_age and transform it into a DataFrame
+channel_age_df = pd.DataFrame(channel_age.unstack(level = 1))
+
+# Plot channel_age
+channel_age_df.plot(kind = 'bar')
+plt.title('Marketing channels by age group')
+plt.xlabel('Age Group')
+plt.ylabel('Users')
+# Add a legend to the plot
+plt.legend(loc = 'upper right',
+           labels = channel_age_df.columns.values)
+plt.show()
+
+#%%
+# Grouping and counting by multiple columns
+
+# Count the subs by subscribing channel and day
+retention_total = marketing.groupby(['date_subscribed',
+                                     'subscribing_channel'])['user_id'].nunique()
+
+# Print results
+print(retention_total.head())
+
+# Sum the retained subs by subscribing channel and date subscribed
+retention_subs = marketing[marketing['is_retained'] == True].groupby(['date_subscribed','subscribing_channel'])['user_id'].nunique()
+
+# Print results
+print(retention_subs.head())
+
+#%%
+# Analyzing retention rates for the campaign
+
+# Divide retained subscribers by total subscribers
+retention_rate = retention_subs/retention_total
+retention_rate_df = pd.DataFrame(retention_rate.unstack(level=1))
+
+# Plot retention rate
+retention_rate_df.plot()
+
+# Add a title, x-label, y-label, legend and display the plot
+plt.title('Retention Rate by Subscribing Channel')
+plt.xlabel('Date Subscribed')
+plt.ylabel('Retention Rate (%)')
+plt.legend(loc = 'upper right', labels = retention_rate_df.columns.values)
+plt.show()
+
+#%%
+# Building a conversion function
+
+def conversion_rate(dataframe, column_names):
+    # Total number of converted users
+    column_conv = dataframe[dataframe['converted'] == True] \
+        .groupby(column_names)['user_id'].nunique()
+
+    # Total number users
+    column_total = dataframe.groupby(column_names)					     							['user_id'].nunique()
+
+    # Conversion rate
+    conversion_rate = column_conv/column_total
+
+    # Fill missing values with 0
+    conversion_rate = conversion_rate.fillna(0)
+    return conversion_rate
+
+# Test and visualize conversion function
+
+# Calculate conversion rate by age_group
+age_group_conv = conversion_rate(marketing, ['date_served', 'age_group'])
+print(age_group_conv)
+
+# Unstack and create a DataFrame
+age_group_df = pd.DataFrame(age_group_conv.unstack(level=1))
+
+# Visualize conversion by age_group
+age_group_df.plot(kind='line')
+plt.title('Conversion rate by age group\n', size = 16)
+plt.ylabel('Conversion rate', size = 14)
+plt.xlabel('Age group', size = 14)
+plt.show()
+
+#%%
+# Plotting function
+
+def plotting_conv(dataframe):
+    for column in dataframe:
+        # Plot column by dataframe's index
+        plt.plot(dataframe.index, dataframe[column])
+        plt.title('Daily ' + str(column) + ' conversion rate\n',
+                  size = 16)
+        plt.ylabel('Conversion rate', size = 14)
+        plt.xlabel('Date', size = 14)
+        # Show plot
+        plt.show()
+        plt.clf()
+
+# Putting it all together
+
+# Calculate conversion rate by date served and age group
+age_group_conv = conversion_rate(marketing,['date_served', 'age_group'])
+
+# Unstack age_group_conv and create a DataFrame
+age_group_df = pd.DataFrame(age_group_conv.unstack(level=1))
+
+# Plot the results
+plotting_conv(age_group_df)
