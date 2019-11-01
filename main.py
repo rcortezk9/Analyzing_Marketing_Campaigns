@@ -273,3 +273,74 @@ age_group_df = pd.DataFrame(age_group_conv.unstack(level=1))
 
 # Plot the results
 plotting_conv(age_group_df)
+
+#%%
+# House ads conversion rate
+# Calculate conversion rate by date served and channel
+daily_conv_channel = conversion_rate(marketing,['date_served', 'marketing_channel'])
+
+print(daily_conv_channel.head())
+
+# Calculate conversion rate by date served and channel
+daily_conv_channel = conversion_rate(marketing, ['date_served',
+                                                 'marketing_channel'])
+
+# Unstack daily_conv_channel and convert it to a DataFrame
+daily_conv_channel = pd.DataFrame(daily_conv_channel.unstack(level = 1))
+
+# Plot results of daily_conv_channel
+plotting_conv(daily_conv_channel)
+
+# A sudden decrease in conversion rate on January 11.
+
+#%%
+# Analyzing House ads conversion rate
+# Add day of week column to marketing
+marketing['DoW_served'] = marketing['date_served'].dt.dayofweek
+
+# Calculate conversion rate by day of week
+DoW_conversion = conversion_rate(marketing, ['DoW_served', 'marketing_channel'])
+
+
+# Unstack channels
+DoW_df = pd.DataFrame(DoW_conversion.unstack(level=1))
+
+# Plot conversion rate by day of week
+DoW_df.plot(kind='line')
+plt.title('Conversion rate by day of week\n')
+plt.ylim(0)
+plt.show()
+
+#%%
+# House ads conversion by language
+# Isolate the rows where marketing channel is House Ads
+house_ads = marketing[marketing['marketing_channel'] == 'House Ads']
+
+# Calculate conversion by date served, and language displayed
+conv_lang_channel = conversion_rate(house_ads, ['date_served', 'language_displayed'])
+
+# Unstack conv_lang_channel
+conv_lang_df = pd.DataFrame(conv_lang_channel.unstack(level=1))
+
+# Use your plotting function to display results
+plotting_conv(conv_lang_df)
+
+#%%
+# Creating a DataFrame for house ads
+
+# Add the new column is_correct_lang
+house_ads['is_correct_lang'] = np.where(
+    house_ads['language_preferred'] == house_ads['language_displayed'],
+    'Yes',
+    'No')
+
+# Groupby date_served and correct_language
+language_check = house_ads.groupby(['date_served', 'is_correct_lang'])['user_id'].count()
+
+# Unstack language_check and fill missing values with 0's
+language_check_df = pd.DataFrame(language_check.unstack(level=1)).fillna(0)
+
+# Print results
+print(language_check_df)
+
+#%%
